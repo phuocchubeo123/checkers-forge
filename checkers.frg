@@ -66,24 +66,6 @@ pred validPiece[row, col: Int] {
     (row >= 0 and row <= 7 and col >= 0 and col <= 7 and remainder[row, 2] = remainder[col, 2])
 }
 
-pred forcedCapture[b: Board, type: PieceRole] {
-    some row, col: Int | {
-        b.board[row][col] = type
-        some m: Move | {
-            m.move_time = b.board_time and
-            m.r_pre = row and m.c_pre = col and
-            validPiece[m.r_pre, m.c_pre] and
-            validPiece[m.r_post, m.c_post] and
-            (
-                topLeftValidCapture[b, m, type] or 
-                topRightValidCapture[b, m, type] or 
-                bottomLeftValidCapture[b, m, type] or 
-                bottomRightValidCapture[b, m, type]
-            )
-        }
-    }
-}
-
 pred initial[b: Board] {
     // Because nothing here is mutable, I cannot initiate takeTopLeft to be none
     // Instead takeTopLeft will be decided later when a move happens
@@ -168,6 +150,19 @@ pred nonCaptureMoveValidity[pre, post: Board, type: PieceRole] {
         }
     }
 }
+
+pred forcedCapture[b: Board, type: PieceRole] {
+    some r_pre, c_pre, r_post, c_post: Int | {
+        validPiece[r_pre, c_pre] and validPiece[r_post, c_post] and
+        (
+            topLeftValidCapture[b, r_pre, c_pre, r_post, c_post, type] or
+            topRightValidCapture[b, r_pre, c_pre, r_post, c_post, type] or
+            bottomLeftValidCapture[b, r_pre, c_pre, r_post, c_post, type] or
+            bottomRightValidCapture[b, r_pre, c_pre, r_post, c_post, type]
+        )
+    }
+}
+
 
 // These valid capture predicates does not check whether a destination is inbound
 // No boolean means not possible to define fun that returns boolean
@@ -343,20 +338,21 @@ pred move[pre, post: Board, r_pre, c_pre, r_post, c_post: Int, p: Player] {
 
     // Test forced capture
     p = Black implies {
+        // I am current not sure if we can remove the forcedCapture predicate
         (forcedCapture[pre, BlackPawn] or forcedCapture[pre, BlackKing]) implies {
-            captureMovesValidity[pre]
+            captureMovesValidity[pre, post, BlackPawn] or captureMovesValidity[pre, post, BlackKing]
         }
-
-        not captureMovesValidity[pre] implies {
-            nonCaptureMoveValidity[pre, post]
+        (not captureMovesValidity[pre, post, BlackPawn] and not captureMovesValidity[pre, post, BlackKing]) implies {
+            nonCaptureMoveValidity[pre, post, BlackPawn] or nonCaptureMoveValidity[pre, post, BlackKing]
         }
     }
 
     p = White implies {
-        (forcedCapture[pre, WhitePawn] or forcedCapture[pre, WhiteKing]) implies captureMovesValidity[pre]
-
-        not captureMovesValidity[pre] implies {
-            nonCaptureMoveValidity[pre, post]
+        (forcedCapture[pre, WhitePawn] or forcedCapture[pre, WhiteKing]) implies {
+            captureMovesValidity[pre, post, WhitePawn] or captureMovesValidity[pre, post, WhiteKing]
+        }
+        (not captureMovesValidity[pre, post, WhitePawn] and not captureMovesValidity[pre, post, WhiteKing]) implies {
+            nonCaptureMoveValidity[pre, post, WhitePawn] or nonCaptureMoveValidity[pre, post, WhiteKing]
         }
     }
 }
@@ -387,6 +383,15 @@ run {
         b1.board_time.next_time = b2.board_time
     }
 } for 3 Board, 5 Int, 3 TIME for {next_time is linear}
+
+run {
+    wellformed
+    validCaptures
+    one b0, b1: Board | {
+        forcedCapture[b0, BlackPawn]
+        move[b0, b1, 2, 2, 4, 4, Black]
+    }
+}
 
 // run {
 //     wellformed
