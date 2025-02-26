@@ -154,6 +154,7 @@ pred nonCaptureMoveValidity[pre, post: Board, type: PieceRole] {
 pred forcedCapture[b: Board, type: PieceRole] {
     some r_pre, c_pre, r_post, c_post: Int | {
         validPiece[r_pre, c_pre] and validPiece[r_post, c_post] and
+        b.board[r_pre][c_pre] = type and
         (
             topLeftValidCapture[b, r_pre, c_pre, r_post, c_post, type] or
             topRightValidCapture[b, r_pre, c_pre, r_post, c_post, type] or
@@ -319,8 +320,6 @@ pred captureMovesValidity[pre, post: Board, type: PieceRole] {
     }
 }
 
-
-
 // Checkers rules
 // Capturing is forced
 // Capturing in the whole sequence is forced
@@ -371,7 +370,7 @@ run {
         nonCaptureMoveValidity[pre, post, BlackPawn]
         pre.board_time.next_time = post.board_time
     }
-} for 2 Board, 5 Int, 2 TIME for {next_time is linear}
+} for 2 Board, 2 TIME for {next_time is linear}
 
 run {
     wellformed
@@ -382,26 +381,80 @@ run {
         b0.board_time.next_time = b1.board_time
         b1.board_time.next_time = b2.board_time
     }
-} for 3 Board, 5 Int, 3 TIME for {next_time is linear}
+} for 3 Board, 3 TIME for {next_time is linear}
 
+// Super cool that the program finds an instance of force capture in around 45 seconds
 run {
     wellformed
     validCaptures
     one b0, b1: Board | {
         forcedCapture[b0, BlackPawn]
         move[b0, b1, 2, 2, 4, 4, Black]
+        b0.board_time.next_time = b1.board_time
     }
-}
+} for 2 Board, 2 TIME for {next_time is linear}
 
-// run {
-//     wellformed
-//     one b0, b1, b2, b3: Board | {
-//         initial[b0]
-//         nonCaptureMoveValidity[b0, b1, BlackPawn]
-//         nonCaptureMoveValidity[b1, b2, WhitePawn]
-//         captureMovesValidity[b2, b3, BlackPawn]
-//         b0.board_time.next_time = b1.board_time
-//         b1.board_time.next_time = b2.board_time
-//         b2.board_time.next_time = b3.board_time
-//     }
-// } for 4 Board, 5 Int, 4 TIME for {next_time is linear}
+// The program runs too slow on this instance. I have not seen any result yet
+run {
+    wellformed
+    one b0, b1, b2, b3: Board | {
+        initial[b0]
+        nonCaptureMoveValidity[b0, b1, BlackPawn]
+        nonCaptureMoveValidity[b1, b2, WhitePawn]
+        captureMovesValidity[b2, b3, BlackPawn]
+        b0.board_time.next_time = b1.board_time
+        b1.board_time.next_time = b2.board_time
+        b2.board_time.next_time = b3.board_time
+    }
+} for 4 Board, 4 TIME for {next_time is linear}
+
+// Try to find an instance that forces capture after 1 move
+forceCaptureOneMove: run {
+    wellformed
+    one b0, b1: Board | {
+        nonCaptureMoveValidity[b0, b1, BlackPawn]    
+        forcedCapture[b1, WhitePawn]
+        b0.board_time.next_time = b1.board_time
+
+        one row, col: Int | b0.board[row][col] = BlackPawn
+        one row, col: Int | b1.board[row][col] = BlackPawn
+        one row, col: Int | b0.board[row][col] = WhitePawn
+        one row, col: Int | b1.board[row][col] = WhitePawn
+
+        no row, col: Int | {
+            b0.board[row][col] = BlackKing or
+            b1.board[row][col] = BlackKing or 
+            b0.board[row][col] = WhiteKing or
+            b1.board[row][col] = WhiteKing
+        }
+    }
+} for 2 Board, 2 TIME for {next_time is linear} 
+
+// The above instance but now we will try to capture
+// Currently running two slow
+forceCaptureOneMoveThenTake: run {
+    wellformed
+    one b0, b1, b2: Board | {
+        nonCaptureMoveValidity[b0, b1, BlackPawn]    
+        forcedCapture[b1, WhitePawn]
+        move[b1, b2, 3, 5, 5, 3, White]
+        b0.board_time.next_time = b1.board_time
+        b1.board_time.next_time = b2.board_time
+
+        one row, col: Int | b0.board[row][col] = BlackPawn
+        one row, col: Int | b0.board[row][col] = WhitePawn
+        one row, col: Int | b1.board[row][col] = BlackPawn
+        one row, col: Int | b1.board[row][col] = WhitePawn
+        one row, col: Int | b2.board[row][col] = WhitePawn
+        no row, col: Int | b2.board[row][col] = BlackPawn
+
+        no row, col: Int | {
+            b0.board[row][col] = BlackKing or
+            b1.board[row][col] = BlackKing or 
+            b2.board[row][col] = BlackKing or
+            b0.board[row][col] = WhiteKing or
+            b1.board[row][col] = WhiteKing or
+            b2.board[row][col] = WhiteKing
+        }
+    }
+} for 3 Board, 3 TIME for {next_time is linear} 
