@@ -2,6 +2,141 @@
 
 open "checkers.frg"
 
+test suite for wellformed {
+    example wellFormedHappyPath is {wellformed} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        TIME = `TIME0
+
+        Board = `Board0
+        board_time = `Board0 -> `TIME0
+
+        `Board0.board = (2, 2) -> `BlackPawn0 + 
+                        (3, 3) -> `WhitePawn0
+    }
+
+    example PieceOnWrongColor is {not wellformed} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        TIME = `TIME0
+
+        Board = `Board0
+        board_time = `Board0 -> `TIME0
+
+        `Board0.board = (2, 3) -> `BlackPawn0 + 
+                        (3, 3) -> `WhitePawn0
+
+    }
+
+    example PieceOffBoard is {not wellformed} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        TIME = `TIME0
+
+        Board = `Board0
+        board_time = `Board0 -> `TIME0
+
+        `Board0.board = (2, -1) -> `BlackPawn0 + 
+                        (3, 3) -> `WhitePawn0
+
+    }
+}
+
+test suite for initial {
+    example isInitial is {some b0: Board| initial[b0]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0
+
+        Board = `Board0
+        board_time = `Board0 -> `TIME0
+
+        `Board0.board = (0, 0) -> `BlackPawn0 + (0, 2) -> `BlackPawn0 + (0, 4) -> `BlackPawn0 +
+                        (0, 6) -> `BlackPawn0 + (1, 1) -> `BlackPawn0 + (1, 3) -> `BlackPawn0 +
+                        (1, 5) -> `BlackPawn0 + (1, 7) -> `BlackPawn0 + (2, 0) -> `BlackPawn0 +
+                        (2, 2) -> `BlackPawn0 + (2, 4) -> `BlackPawn0 + (2, 6) -> `BlackPawn0 +
+                        (7, 1) -> `WhitePawn0 + (7, 3) -> `WhitePawn0 + (7, 5) -> `WhitePawn0 +
+                        (7, 7) -> `WhitePawn0 + (6, 0) -> `WhitePawn0 + (6, 2) -> `WhitePawn0 +
+                        (6, 4) -> `WhitePawn0 + (6, 6) -> `WhitePawn0 + (5, 1) -> `WhitePawn0 +
+                        (5, 3) -> `WhitePawn0 + (5, 5) -> `WhitePawn0 + (5, 7) -> `WhitePawn0
+                        
+    }
+
+    example notInitialExtraPiece is {all b0: Board| not initial[b0]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0
+
+        Board = `Board0
+        board_time = `Board0 -> `TIME0
+
+        `Board0.board = (0, 0) -> `BlackPawn0 + (0, 2) -> `BlackPawn0 + (0, 4) -> `BlackPawn0 +
+                        (0, 6) -> `BlackPawn0 + (1, 1) -> `BlackPawn0 + (1, 3) -> `BlackPawn0 +
+                        (1, 5) -> `BlackPawn0 + (1, 7) -> `BlackPawn0 + (2, 0) -> `BlackPawn0 +
+                        (2, 2) -> `BlackPawn0 + (2, 4) -> `BlackPawn0 + (2, 6) -> `BlackPawn0 +
+                        (7, 1) -> `WhitePawn0 + (7, 3) -> `WhitePawn0 + (7, 5) -> `WhitePawn0 +
+                        (7, 7) -> `WhitePawn0 + (6, 0) -> `WhitePawn0 + (6, 2) -> `WhitePawn0 +
+                        (6, 4) -> `WhitePawn0 + (6, 6) -> `WhitePawn0 + (5, 1) -> `WhitePawn0 +
+                        (5, 3) -> `WhitePawn0 + (5, 5) -> `WhitePawn0 + (5, 7) -> `WhitePawn0 +
+                        (4, 0) -> `BlackPawn0
+                        
+    }
+
+    example notInitialMissingPiece is {all b0: Board| not initial[b0]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0
+
+        Board = `Board0
+        board_time = `Board0 -> `TIME0
+
+        `Board0.board = (0, 0) -> `BlackPawn0 + (0, 2) -> `BlackPawn0 + (0, 4) -> `BlackPawn0 +
+                        (0, 6) -> `BlackPawn0 + (1, 1) -> `BlackPawn0 + (1, 3) -> `BlackPawn0 +
+                        (1, 5) -> `BlackPawn0 + (1, 7) -> `BlackPawn0 + (2, 0) -> `BlackPawn0 +
+                        (2, 2) -> `BlackPawn0 + (2, 4) -> `BlackPawn0 + (2, 6) -> `BlackPawn0 +
+                        (7, 1) -> `WhitePawn0 + (7, 3) -> `WhitePawn0 + (7, 5) -> `WhitePawn0 +
+                        (7, 7) -> `WhitePawn0 + (6, 0) -> `WhitePawn0 + (6, 2) -> `WhitePawn0 +
+                        (6, 4) -> `WhitePawn0 + (6, 6) -> `WhitePawn0
+                        
+    }
+}
+
 test suite for topRightValidCapture {
     example BlackPawnTopRightCapture is {one b0: Board, m: Move | topRightValidCapture[b0, m.r_pre, m.c_pre, m.r_post, m.c_post, BlackPawn]} for {
         PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
@@ -744,6 +879,125 @@ test suite for forcedCapture {
 }
 
 test suite for move {
+    example basicMove is {one b0, b1: Board | move[b0, b1, 2, 2, 4, 4, Black]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0 + `TIME1
+        next_time = `TIME0 -> `TIME1
+
+        Move = `Move0 
+        move_time = `Move0 -> `TIME0
+        r_pre = `Move0 -> 2
+        c_pre = `Move0 -> 2
+        r_post = `Move0 -> 3
+        c_post = `Move0 -> 3
+
+        Board = `Board0 + `Board1
+        board_time = `Board0 -> `TIME0 + `Board1 -> `TIME1
+
+        `Board0.board = (2, 2) -> `BlackPawn0 + 
+                        (7, 3) -> `WhitePawn0
+        `Board1.board = (3, 3) -> `BlackPawn0 +
+                        (7, 3) -> `WhitePawn0
+    }
+
+    example basicPromotion is {one b0, b1: Board | move[b0, b1, 6, 0, 7, 1, Black]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0 + `TIME1
+        next_time = `TIME0 -> `TIME1
+
+        Move = `Move0 
+        move_time = `Move0 -> `TIME0
+        r_pre = `Move0 -> 6
+        c_pre = `Move0 -> 0
+        r_post = `Move0 -> 7
+        c_post = `Move0 -> 1
+
+        Board = `Board0 + `Board1
+        board_time = `Board0 -> `TIME0 + `Board1 -> `TIME1
+
+        `Board0.board = (6, 0) -> `BlackPawn0 + 
+                        (7, 5) -> `WhitePawn0
+        `Board1.board = (7, 1) -> `BlackKing0 +
+                        (7, 5) -> `WhitePawn0
+    }
+
+    example noCaptureAfterPromote is {one b0, b1: Board | move[b0, b1, 6, 0, 7, 1, Black]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0 + `TIME1
+        next_time = `TIME0 -> `TIME1
+
+        Move = `Move0 
+        move_time = `Move0 -> `TIME0
+        r_pre = `Move0 -> 6
+        c_pre = `Move0 -> 0
+        r_post = `Move0 -> 7
+        c_post = `Move0 -> 1
+
+        Board = `Board0 + `Board1
+        board_time = `Board0 -> `TIME0 + `Board1 -> `TIME1
+
+        `Board0.board = (6, 0) -> `BlackPawn0 + 
+                        (6, 2) -> `WhitePawn0
+        `Board1.board = (7, 1) -> `BlackKing0 +
+                        (6, 2) -> `WhitePawn0
+    }
+
+    example cantCaptureAfterPromote is {all b0, b1: Board | not move[b0, b1, 6, 0, 5, 3, Black]} for {
+        PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
+        BlackPawn = `BlackPawn0
+        BlackKing = `BlackKing0
+        WhitePawn = `WhitePawn0
+        WhiteKing = `WhiteKing0
+
+        Player = `Black0 + `White0
+        Black = `Black0
+        White = `White0
+
+        TIME = `TIME0 + `TIME1
+        next_time = `TIME0 -> `TIME1
+
+        Move = `Move0 
+        move_time = `Move0 -> `TIME0
+        r_pre = `Move0 -> 6
+        c_pre = `Move0 -> 0
+        r_post = `Move0 -> 5
+        c_post = `Move0 -> 3
+
+        Board = `Board0 + `Board1
+        board_time = `Board0 -> `TIME0 + `Board1 -> `TIME1
+
+        `Board0.board = (6, 0) -> `BlackPawn0 + 
+                        (6, 2) -> `WhitePawn0
+        `Board1.board = (5, 3) -> `BlackKing0
+    }
+
     example betweenTwoChoices is {one b0, b1: Board | move[b0, b1, 2, 2, 4, 4, Black] and validCaptures} for {
         PieceRole = `BlackPawn0 + `BlackKing0 + `WhitePawn0 + `WhiteKing0
         BlackPawn = `BlackPawn0

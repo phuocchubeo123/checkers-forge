@@ -458,3 +458,23 @@ forceCaptureOneMoveThenTake: run {
         }
     }
 } for 3 Board, 3 TIME for {next_time is linear} 
+
+// Helper for induction
+pred boardWellformed[b: Board] {
+    all row, col: Int | {
+        // No piece on squares that have (row+col) being even
+        (row < 0 or row > 7 or col < 0 or col > 7 or remainder[row, 2] != remainder[col, 2]) 
+        implies no b.board[row][col]
+    }
+}
+
+// Is it possible to make a move from a well formed board and get a not well formed board?
+// Unsatisfiable, showing that move preserves wellformedness
+// Takes a minute to run
+wellToNotWellformed: run {
+    some b0, b1: Board, r_pre, c_pre, r_post, c_post: Int, p: Player | {
+        boardWellformed[b0]
+        move[b0, b1, r_pre, c_pre, r_post, c_post, p]
+        not boardWellformed[b1]
+    }
+} for 2 Board, 2 TIME for {next_time is linear}
