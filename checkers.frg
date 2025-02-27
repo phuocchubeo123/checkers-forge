@@ -341,7 +341,7 @@ pred move[pre, post: Board, r_pre, c_pre, r_post, c_post: Int, p: Player] {
         (forcedCapture[pre, BlackPawn] or forcedCapture[pre, BlackKing]) implies {
             captureMovesValidity[pre, post, BlackPawn] or captureMovesValidity[pre, post, BlackKing]
         }
-        (not captureMovesValidity[pre, post, BlackPawn] and not captureMovesValidity[pre, post, BlackKing]) implies {
+        ((not forcedCapture[pre, BlackPawn]) and (not forcedCapture[pre, BlackKing])) implies {
             nonCaptureMoveValidity[pre, post, BlackPawn] or nonCaptureMoveValidity[pre, post, BlackKing]
         }
     }
@@ -350,7 +350,7 @@ pred move[pre, post: Board, r_pre, c_pre, r_post, c_post: Int, p: Player] {
         (forcedCapture[pre, WhitePawn] or forcedCapture[pre, WhiteKing]) implies {
             captureMovesValidity[pre, post, WhitePawn] or captureMovesValidity[pre, post, WhiteKing]
         }
-        (not captureMovesValidity[pre, post, WhitePawn] and not captureMovesValidity[pre, post, WhiteKing]) implies {
+        ((not forcedCapture[pre, WhitePawn]) and (not forcedCapture[pre, WhiteKing])) implies {
             nonCaptureMoveValidity[pre, post, WhitePawn] or nonCaptureMoveValidity[pre, post, WhiteKing]
         }
     }
